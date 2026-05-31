@@ -33,7 +33,7 @@ services:
       - traefik.http.routers.copa-ga-web.rule=Host(`${APP_DOMAIN}`)
       - traefik.http.routers.copa-ga-web.entrypoints=websecure
       - traefik.http.routers.copa-ga-web.tls.certresolver=letsencrypt
-      - traefik.http.services.copa-ga-web.loadbalancer.server.port=88
+      - traefik.http.services.copa-ga-web.loadbalancer.server.port=80
 
 volumes:
   backend_data:
