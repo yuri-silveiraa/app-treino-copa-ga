@@ -11,7 +11,7 @@ services:
       - backend_data:/data
     networks:
       - internal
-      - traefik-public
+      - web
     labels:
       - traefik.enable=true
       - traefik.http.routers.copa-ga-api.rule=Host(`${API_DOMAIN}`)
@@ -27,13 +27,13 @@ services:
     depends_on:
       - backend
     networks:
-      - traefik-public
+      - web
     labels:
       - traefik.enable=true
       - traefik.http.routers.copa-ga-web.rule=Host(`${APP_DOMAIN}`)
       - traefik.http.routers.copa-ga-web.entrypoints=websecure
       - traefik.http.routers.copa-ga-web.tls.certresolver=letsencrypt
-      - traefik.http.services.copa-ga-web.loadbalancer.server.port=80
+      - traefik.http.services.copa-ga-web.loadbalancer.server.port=88
 
 volumes:
   backend_data:
