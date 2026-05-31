@@ -40,5 +40,5 @@ volumes:
 
 networks:
   internal:
-  traefik-public:
+  web:
     external: true
