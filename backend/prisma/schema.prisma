@@ -1,0 +1,69 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int          @id @default(autoincrement())
+  username     String       @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime     @default(now())
+  answers      Answer[]
+  simulations  Simulation[]
+}
+
+model Question {
+  id           Int           @id @default(autoincrement())
+  statement    String
+  theme        String
+  difficulty   String
+  explanation  String
+  source       String?
+  createdAt    DateTime      @default(now())
+  alternatives Alternative[]
+  answers      Answer[]
+
+  @@unique([statement, theme])
+}
+
+model Alternative {
+  id         Int      @id @default(autoincrement())
+  questionId Int
+  text       String
+  isCorrect  Boolean  @default(false)
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  answers    Answer[]
+}
+
+model Answer {
+  id                    Int          @id @default(autoincrement())
+  userId                Int
+  questionId            Int
+  selectedAlternativeId Int
+  isCorrect             Boolean
+  responseTimeMs        Int
+  mode                  String
+  simulationId          Int?
+  createdAt             DateTime     @default(now())
+  user                  User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question              Question     @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  selectedAlternative   Alternative  @relation(fields: [selectedAlternativeId], references: [id], onDelete: Cascade)
+  simulation            Simulation?  @relation(fields: [simulationId], references: [id], onDelete: Cascade)
+}
+
+model Simulation {
+  id             Int      @id @default(autoincrement())
+  userId         Int
+  totalQuestions Int
+  correctAnswers Int
+  wrongAnswers   Int
+  totalTimeMs    Int
+  createdAt      DateTime @default(now())
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  answers        Answer[]
+}

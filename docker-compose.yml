@@ -1,0 +1,44 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    environment:
+      DATABASE_URL: file:/data/prod.db
+      JWT_SECRET: ${JWT_SECRET}
+      FRONTEND_URL: ${FRONTEND_URL}
+      PORT: 3333
+    volumes:
+      - backend_data:/data
+    networks:
+      - internal
+      - traefik-public
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.copa-ga-api.rule=Host(`${API_DOMAIN}`)
+      - traefik.http.routers.copa-ga-api.entrypoints=websecure
+      - traefik.http.routers.copa-ga-api.tls.certresolver=letsencrypt
+      - traefik.http.services.copa-ga-api.loadbalancer.server.port=3333
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+    depends_on:
+      - backend
+    networks:
+      - traefik-public
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.copa-ga-web.rule=Host(`${APP_DOMAIN}`)
+      - traefik.http.routers.copa-ga-web.entrypoints=websecure
+      - traefik.http.routers.copa-ga-web.tls.certresolver=letsencrypt
+      - traefik.http.services.copa-ga-web.loadbalancer.server.port=80
+
+volumes:
+  backend_data:
+
+networks:
+  internal:
+  traefik-public:
+    external: true
