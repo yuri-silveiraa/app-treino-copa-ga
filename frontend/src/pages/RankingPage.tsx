@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../services/api";
 import { RankingItem } from "../types/api";
-import { formatDecimal, formatMs } from "../utils/format";
+import { formatMs } from "../utils/format";
 
 export function RankingPage() {
   const [ranking, setRanking] = useState<RankingItem[]>([]);
@@ -40,8 +40,8 @@ export function RankingPage() {
                 <th>Posição</th>
                 <th>Usuário</th>
                 <th>Simulados</th>
-                <th>Média de acertos</th>
-                <th>Tempo médio</th>
+                <th>Melhor resultado</th>
+                <th>Tempo</th>
               </tr>
             </thead>
             <tbody>
@@ -50,8 +50,10 @@ export function RankingPage() {
                   <td>{item.position}</td>
                   <td>{item.name}</td>
                   <td>{item.simulationsCount}</td>
-                  <td>{formatDecimal(item.averageCorrect)}</td>
-                  <td>{formatMs(item.averageTimeMs)}</td>
+                  <td>
+                    {item.bestCorrectAnswers}/{item.bestTotalQuestions}
+                  </td>
+                  <td>{formatMs(item.bestTotalTimeMs)}</td>
                 </tr>
               ))}
             </tbody>

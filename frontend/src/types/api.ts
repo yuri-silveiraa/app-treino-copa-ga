@@ -62,6 +62,8 @@ export type RankingItem = {
   username: string;
   name: string;
   simulationsCount: number;
-  averageCorrect: number;
-  averageTimeMs: number;
+  bestCorrectAnswers: number;
+  bestWrongAnswers: number;
+  bestTotalQuestions: number;
+  bestTotalTimeMs: number;
 };

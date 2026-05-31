@@ -19,7 +19,8 @@ authRouter.post(
       throw new HttpError(400, "Usuário e senha são obrigatórios");
     }
 
-    const user = await prisma.user.findUnique({ where: { username } });
+    const normalizedUsername = username.trim().toLowerCase();
+    const user = await prisma.user.findUnique({ where: { username: normalizedUsername } });
     if (!user) {
       throw new HttpError(401, "Credenciais inválidas");
     }

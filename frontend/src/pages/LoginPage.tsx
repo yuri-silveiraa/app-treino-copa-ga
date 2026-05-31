@@ -39,7 +39,15 @@ export function LoginPage() {
 
         <label>
           Usuário
-          <input value={username} onChange={(event) => setUsername(event.target.value)} />
+          <input
+            value={username}
+            onChange={(event) => setUsername(event.target.value)}
+            autoCapitalize="none"
+            autoCorrect="off"
+            autoComplete="username"
+            spellCheck={false}
+            inputMode="text"
+          />
         </label>
 
         <label>

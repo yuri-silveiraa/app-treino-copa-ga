@@ -66,6 +66,7 @@ export function QuestionCard({
             key={alternative.id}
             className={getAlternativeClass(alternative)}
             aria-disabled={disabled || answered}
+            aria-pressed={selectedId === alternative.id}
             onClick={() => handleSelect(alternative)}
           >
             {alternative.text}

@@ -147,25 +147,44 @@ simulationsRouter.get(
         username: string;
         name: string;
         simulationsCount: number;
-        totalCorrect: number;
-        totalTimeMs: number;
+        bestCorrectAnswers: number;
+        bestTotalTimeMs: number;
+        bestWrongAnswers: number;
+        bestTotalQuestions: number;
       }
     >();
 
     for (const simulation of simulations) {
-      const current = rankingMap.get(simulation.userId) ?? {
+      const current = rankingMap.get(simulation.userId);
+      const candidate = {
         userId: simulation.userId,
         username: simulation.user.username,
         name: simulation.user.name,
-        simulationsCount: 0,
-        totalCorrect: 0,
-        totalTimeMs: 0,
+        simulationsCount: 1,
+        bestCorrectAnswers: simulation.correctAnswers,
+        bestTotalTimeMs: simulation.totalTimeMs,
+        bestWrongAnswers: simulation.wrongAnswers,
+        bestTotalQuestions: simulation.totalQuestions,
       };
 
+      if (!current) {
+        rankingMap.set(simulation.userId, candidate);
+        continue;
+      }
+
       current.simulationsCount += 1;
-      current.totalCorrect += simulation.correctAnswers;
-      current.totalTimeMs += simulation.totalTimeMs;
-      rankingMap.set(simulation.userId, current);
+
+      const isBetter =
+        simulation.correctAnswers > current.bestCorrectAnswers ||
+        (simulation.correctAnswers === current.bestCorrectAnswers &&
+          simulation.totalTimeMs < current.bestTotalTimeMs);
+
+      if (isBetter) {
+        current.bestCorrectAnswers = simulation.correctAnswers;
+        current.bestTotalTimeMs = simulation.totalTimeMs;
+        current.bestWrongAnswers = simulation.wrongAnswers;
+        current.bestTotalQuestions = simulation.totalQuestions;
+      }
     }
 
     const ranking = Array.from(rankingMap.values())
@@ -174,14 +193,16 @@ simulationsRouter.get(
         username: item.username,
         name: item.name,
         simulationsCount: item.simulationsCount,
-        averageCorrect: item.totalCorrect / item.simulationsCount,
-        averageTimeMs: item.totalTimeMs / item.simulationsCount,
+        bestCorrectAnswers: item.bestCorrectAnswers,
+        bestWrongAnswers: item.bestWrongAnswers,
+        bestTotalQuestions: item.bestTotalQuestions,
+        bestTotalTimeMs: item.bestTotalTimeMs,
       }))
       .sort((a, b) => {
-        if (b.averageCorrect !== a.averageCorrect) {
-          return b.averageCorrect - a.averageCorrect;
+        if (b.bestCorrectAnswers !== a.bestCorrectAnswers) {
+          return b.bestCorrectAnswers - a.bestCorrectAnswers;
         }
-        return a.averageTimeMs - b.averageTimeMs;
+        return a.bestTotalTimeMs - b.bestTotalTimeMs;
       })
       .map((item, index) => ({
         position: index + 1,
