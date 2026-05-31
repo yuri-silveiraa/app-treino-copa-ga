@@ -26,6 +26,7 @@ RUN npm ci
 ENV NODE_ENV=production
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/prisma ./prisma
+COPY --from=build /app/src ./src
 COPY --from=build /app/node_modules/.prisma ./node_modules/.prisma
 EXPOSE 3333
 CMD ["sh", "-c", "npx prisma migrate deploy && npx prisma db seed && node dist/src/server.js"]
